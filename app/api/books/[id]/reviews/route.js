@@ -9,10 +9,10 @@ export async function GET(req, { params }) {
   const books = readJSON(booksPath).books
   const reviews = readJSON(reviewsPath).reviews
 
-  const book = books.find(b => b.id===id)
+  const book = books.find(b => b.id.toString() === id) // FIXED
   if (!book) return new Response(JSON.stringify({ message:'Book not found' }), { status: 404 })
 
-  const bookReviews = reviews.filter(r => r.bookId===id)
+  const bookReviews = reviews.filter(r => r.bookId.toString() === id) // FIXED
   return new Response(JSON.stringify(bookReviews), { status: 200 })
 }
 
@@ -26,15 +26,21 @@ export async function POST(req, { params }) {
   const books = readJSON(booksPath).books
   const reviews = readJSON(reviewsPath).reviews
 
-  const book = books.find(b => b.id===id)
+  const book = books.find(b => b.id.toString() === id) // FIXED
   if (!book) return new Response(JSON.stringify({ message:'Book not found' }), { status:404 })
 
   if (!body.author || !body.rating)
     return new Response(JSON.stringify({ message:'Review must include author and rating' }), { status:400 })
 
-  const newReview = { ...body, id:`review-${Date.now()}`, bookId:id, timestamp:new Date().toISOString() }
+  const newReview = {
+    ...body,
+    id: `review-${Date.now()}`,
+    bookId: id,
+    timestamp: new Date().toISOString()
+  }
+
   reviews.push(newReview)
-  book.reviewCount = (book.reviewCount||0)+1
+  book.reviewCount = (book.reviewCount || 0) + 1
 
   writeJSON(reviewsPath, { reviews })
   writeJSON(booksPath, { books })
