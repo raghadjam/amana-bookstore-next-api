@@ -109,6 +109,14 @@
       "comment": "Great integration of geophysics with climate science. The plate tectonics chapters are well-written and current.",
       "timestamp": "2024-03-08T11:40:00Z",
       "verified": true
+    },
+    {
+      "author": "Alice",
+      "rating": 5,
+      "comment": "Great book!",
+      "id": "review-1761424145183",
+      "bookId": "4",
+      "timestamp": "2025-10-25T20:29:05.183Z"
     }
   ]
 }

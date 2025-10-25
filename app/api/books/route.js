@@ -14,28 +14,24 @@ export async function GET() {
   }
 }
 
-// POST new book
 export async function POST(req) {
-  try { authenticate(req) } catch(e) {
-    return new Response(JSON.stringify({ message: e.message }), { status: 403 })
+  try {
+    authenticate(req)
+
+    const books = readJSON(booksPath).books
+    const body = await req.json()
+
+    if (!body.title || !body.author)
+      return new Response(JSON.stringify({ message: 'Book must include title and author' }), { status: 400 })
+
+    const newId = books.length ? (parseInt(books[books.length - 1].id) + 1).toString() : '1'
+    const newBook = { ...body, id: newId, reviews: [], reviewCount: 0 }
+
+    books.push(newBook)
+    writeJSON(booksPath, { books })
+
+    return new Response(JSON.stringify({ message: 'Book added', book: newBook }), { status: 201 })
+  } catch (err) {
+    return new Response(JSON.stringify({ message: err.message || 'Internal server error' }), { status: err.status || 500 })
   }
-
-  let body
-  try { body = await req.json() } catch(e) {
-    return new Response(JSON.stringify({ message: 'Invalid JSON' }), { status: 400 })
-  }
-
-  if (!body.title || !body.author)
-    return new Response(JSON.stringify({ message: 'Book must include title and author' }), { status: 400 })
-
-  let books
-  try { books = readJSON(booksPath).books } catch(e) { books = [] }
-
-  const newId = books.length ? (parseInt(books[books.length-1].id) + 1).toString() : '1'
-  const newBook = { ...body, id: newId, reviews: [], reviewCount: 0 }
-
-  books.push(newBook)
-  writeJSON(booksPath, { books })
-
-  return new Response(JSON.stringify({ message: 'Book added', book: newBook }), { status: 201 })
 }

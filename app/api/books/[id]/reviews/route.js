@@ -18,34 +18,29 @@ export async function GET(req, { params }) {
   return new Response(JSON.stringify(bookReviews), { status: 200 })
 }
 
-// POST a new review
 export async function POST(req, { params }) {
-  const id = params.id
+  try {
+    const id = params.id
+    authenticate(req)
 
-  try { authenticate(req) } catch(e) {
-    return new Response(JSON.stringify({ message: e.message }), { status: 403 })
+    const books = readJSON(booksPath).books
+    const reviews = readJSON(reviewsPath).reviews
+    const body = await req.json()
+
+    const book = books.find(b => b.id === id)
+    if (!book) return new Response(JSON.stringify({ message: 'Book not found' }), { status: 404 })
+    if (!body.author || !body.rating)
+      return new Response(JSON.stringify({ message: 'Review must include author and rating' }), { status: 400 })
+
+    const newReview = { ...body, id: `review-${Date.now()}`, bookId: id, timestamp: new Date().toISOString() }
+    reviews.push(newReview)
+    book.reviewCount = (book.reviewCount || 0) + 1
+
+    writeJSON(reviewsPath, { reviews })
+    writeJSON(booksPath, { books })
+
+    return new Response(JSON.stringify({ message: 'Review added', review: newReview }), { status: 201 })
+  } catch (err) {
+    return new Response(JSON.stringify({ message: err.message || 'Internal server error' }), { status: err.status || 500 })
   }
-
-  let body
-  try { body = await req.json() } catch(e) {
-    return new Response(JSON.stringify({ message: 'Invalid JSON' }), { status: 400 })
-  }
-
-  if (!body.author || !body.rating)
-    return new Response(JSON.stringify({ message: 'Review must include author and rating' }), { status: 400 })
-
-  const books = readJSON(booksPath).books
-  const reviews = readJSON(reviewsPath).reviews
-
-  const book = books.find(b => b.id === id)
-  if (!book) return new Response(JSON.stringify({ message: 'Book not found' }), { status: 404 })
-
-  const newReview = { ...body, id: `review-${Date.now()}`, bookId: id, timestamp: new Date().toISOString() }
-  reviews.push(newReview)
-  book.reviewCount = (book.reviewCount || 0) + 1
-
-  writeJSON(reviewsPath, { reviews })
-  writeJSON(booksPath, { books })
-
-  return new Response(JSON.stringify({ message: 'Review added', review: newReview }), { status: 201 })
 }

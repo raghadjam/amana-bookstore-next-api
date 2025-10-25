@@ -77,6 +77,13 @@
       "reviewCount": 12,
       "inStock": false,
       "featured": false
+    },
+    {
+      "title": "Test Book",
+      "author": "Raghad",
+      "id": "4",
+      "reviews": [],
+      "reviewCount": 1
     }
   ]
 }
