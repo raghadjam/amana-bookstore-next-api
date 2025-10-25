@@ -1,8 +1,12 @@
 import { authenticate } from '@/utils/auth'
 import { readJSON } from '@/utils/helpers'
+import path from 'path'
 
-let books = readJSON('app/data/books.json').books
-let reviews = readJSON('app/data/reviews.json').reviews
+const booksPath = path.join(process.cwd(), 'app', 'data', 'books.json')
+const reviewsPath = path.join(process.cwd(), 'app', 'data', 'reviews.json')
+
+let books = readJSON(booksPath).books
+let reviews = readJSON(reviewsPath).reviews
 
 export async function GET(req, { params }) {
   const id = params.id
