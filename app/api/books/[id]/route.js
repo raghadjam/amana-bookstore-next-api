@@ -1,6 +1,8 @@
 import { readJSON } from '@/utils/helpers'
+import path from 'path'
 
-const booksPath = 'app/data/books.json'
+const booksPath = path.join(process.cwd(), 'app', 'data', 'books.json')
+
 
 export async function GET(req, { params }) {
   const id = params.id
