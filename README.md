@@ -31,10 +31,12 @@ A **Next.js Serverless API** for managing books and reviews, deployed on Vercel.
 
 ## Authentication
 
-* Header-based auth: `x-user`
-* Only users in `utils/auth.js` are allowed to POST books or reviews
+* **Header-based auth**: Include `x-user` with one of the authorized usernames in the request header. 
+* Only requests with a valid `x-user` value are allowed to **POST books or reviews**.
 
 ---
+
+
 
 ## API Routes
 
